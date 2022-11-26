@@ -1,14 +1,20 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
-import PRODUCTS from '../shop-data.json';
+import { addCollectionAndDocuments } from "../utils/firebase/firebase.utils.js";
 
-// as the actural value you wnat to access
+import SHOP_DATA from '../shop-data.js';
+
 export const ProductsContext = createContext({
     products: [],
 });
 
 export const ProductsProvider = ({ children }) => {
-    const [products, setCurrentProducts] = useState(PRODUCTS);
+    const [products, setCurrentProducts] = useState([]);
+
+    useEffect(() => {
+        addCollectionAndDocuments('categories', SHOP_DATA);
+    }, []);
+
     const value = { products };
 
     return <ProductsContext.Provider value={value}>{children}</ProductsContext.Provider>
