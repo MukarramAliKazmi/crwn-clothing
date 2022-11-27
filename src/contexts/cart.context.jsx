@@ -1,5 +1,7 @@
 import { createContext, useReducer } from "react";
 
+import { createAction } from "../utils/reducer/reducer.utils";
+
 const addCartItem = (cartItems, productToAdd) => {
     const existingCartItem = cartItems.find(cartItem => cartItem.id === productToAdd.id);
 
@@ -43,7 +45,7 @@ export const CartContext = createContext({
     cartTotal: 0
 });
 
-export const USER_ACTION_TYPES = {
+export const CART_ACTION_TYPES = {
     SET_IS_CART_OPEN: 'SET_IS_CART_OPEN',
     SET_CART_ITEMS: 'SET_CART_ITEMS',
 }
@@ -52,12 +54,12 @@ const cartReducer = (state, action) => {
     const { type, payload  } = action;
 
     switch(type) {
-        case USER_ACTION_TYPES.SET_IS_CART_OPEN:
+        case CART_ACTION_TYPES.SET_IS_CART_OPEN:
             return {
                 ...state,
                 isCartOpen: payload
             };
-        case USER_ACTION_TYPES.SET_CART_ITEMS:
+        case CART_ACTION_TYPES.SET_CART_ITEMS:
             return {
                 ...state,
                 ...payload,
@@ -78,29 +80,28 @@ const INITIAL_STATE = {
 export const CartProvider = ({ children }) => {
     const [{ isCartOpen, cartItems, cartCount, cartTotal }, dispatch ] = useReducer(cartReducer, INITIAL_STATE);
 
-    const setIsCartOpen = (pylod) => {
-        dispatch({ type: USER_ACTION_TYPES.SET_IS_CART_OPEN, payload: pylod });
+    const setIsCartOpen = (bool) => {
+        dispatch(createAction( CART_ACTION_TYPES.SET_IS_CART_OPEN, bool ));
     }
 
     const updateCartItemsReducer = (newCartItems) => {
-        const newCartCount = cartItems.reduce(
+        const newCartCount = newCartItems.reduce(
             (total, cartItem) => total + cartItem.quantity,
             0
         );
 
-        const newCartTotal = cartItems.reduce(
+        const newCartTotal = newCartItems.reduce(
             (total, cartItem) => total + (cartItem.price * cartItem.quantity),
             0
         );
 
-        dispatch({
-            type: USER_ACTION_TYPES.SET_CART_ITEMS,
-            payload: {
+        dispatch(
+            createAction(CART_ACTION_TYPES.SET_CART_ITEMS, {
                 cartItems: newCartItems,
                 cartTotal: newCartTotal,
                 cartCount: newCartCount,
-            },
-        });
+            })
+        );
     };
 
     const addItemToCart = (productToAdd) => {
