@@ -22,4 +22,4 @@ export const selectCategoriesIsLoading = createSelector(
         console.log(categoriesSlice.isLoading)
         return categoriesSlice.isLoading 
     }
-)
+);
